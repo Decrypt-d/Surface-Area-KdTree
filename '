@@ -1,0 +1,30 @@
+#include <random>
+#include <vector>
+
+
+struct kdTreeNode
+{
+	kdTreeNode * left;
+	kdTreeNode * right;
+	bool isLeaf = false;
+	std::vector<Triangle *> triangles;
+	kdTreeNode(kdTreeNode * left, kdTreeNode * right, bool isLeaf) : left(left), right(right), isLeaf(isLeaf) {}
+	kdTreeNode(kdTreeNode * left, kdTreeNode * right, bool isLeaf, std::vector<Triangle *> triangles) : left(left), right(right), isLeaf(isLeaf), triangles(triangles) {}
+};
+
+class kdTree
+{
+	private:
+		kdTreeNode * buildKdTree(std::vector<Triangle *> triangles, Box & V, int depth)
+		{
+				
+		}
+
+	public:
+		kdTreeNode root;
+		
+		kdTree(int depth)
+		{
+			root = 	
+		}	
+};

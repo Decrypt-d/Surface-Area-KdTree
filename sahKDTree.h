@@ -165,7 +165,6 @@ class sahKDTree
 
 		void splitTrianglesIntVoxel(std::vector<Triangle *> & T, splitPlane & p, Side & pSide, std::vector<Triangle *> & left, std::vector<Triangle *> & right)
 		{
-			//std::cout << p.pk << " " << p.pe << std::endl;
 			for (int i = 0; i < T.size(); ++i)
 			{
 				Box tB = T[i]->getBoundingBox();

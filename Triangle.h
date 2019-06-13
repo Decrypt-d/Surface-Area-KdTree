@@ -8,6 +8,7 @@ class Triangle : public Geometry
 	public:
 	Vec v1, v2, v3;
 	const Vec * vertices[3];
+
 	Triangle(const Vec & v1, const Vec & v2, const Vec & v3): v1(v1), v2(v2), v3(v3) 
 	{
 		vertices[0] = &v1;

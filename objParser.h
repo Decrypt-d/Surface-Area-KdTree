@@ -9,6 +9,24 @@
 
 class objParser
 {
+
+	public:
+	static void writeMeshToRaw(const std::vector<Vec> & vertices)
+	{
+		std::ofstream objFile;
+		objFile.open("output.obj");
+		for (int i = 0; i < vertices.size(); ++i)
+		{
+			objFile << vertices[i].x << " ";
+			objFile << vertices[i].y << " ";
+			objFile << vertices[i].z; 
+			objFile << "\n"; 
+		}
+
+		objFile.close();
+
+	}
+
 	public:
 	static void parseObjFile(std::string file, model & newModel)
 	{
@@ -26,7 +44,7 @@ class objParser
 				std::string type, x, y, z;
 				std::istringstream iss(line);
 				iss >> type >> x >> y >> z;
-				vertices.push_back(Vec(atof(x.c_str()), atof(y.c_str()), atof(z.c_str())));
+				vertices.push_back(Vec(30.0f * atof(x.c_str()), 30.0f * atof(y.c_str()), 30.0f * atof(z.c_str())));
 			}		
 			else if (line[0] == 'f')
 			{
@@ -37,11 +55,16 @@ class objParser
 				int index2 = atoi(v2.c_str()) - 1;
 				int index3 = atoi(v3.c_str()) - 1;
 				newModel.triangleMesh.push_back(Triangle(vertices[index1], vertices[index2], vertices[index3]));
+				newModel.elem.push_back(index1);
+				newModel.elem.push_back(index2);
+				newModel.elem.push_back(index3);
 			}
 		}	
+
+		newModel.mesh2 = vertices;
+
 		newModel.updateTrianglePointers();
 		newModel.generateKdTree();
-		//std::cout << "KdTree Depth " << newModel.getKdTreeDepth(newModel.tree->root) << std::endl;
 		infile.close();
 	}
 };

@@ -10,6 +10,9 @@ class model : public Geometry
 	std::vector<Triangle *> trianglePointer;
 	sahKDTree * tree = nullptr;	
 
+	std::vector<Vec> mesh2;
+	std::vector<unsigned int> elem;
+
 	void printMesh()
 	{
 		for (int i = 0; i < triangleMesh.size(); ++i)
@@ -74,6 +77,16 @@ class model : public Geometry
 		if (r->isLeaf)
 			std::cout << "Triangles Size: " << r->triangles.size() << std::endl;
 		return 1 + std::max(getKdTreeDepth(r->left), getKdTreeDepth(r->right));
+	}
+
+	void getVertices(std::vector<Vec> & vertices)
+	{
+		for (int i = 0; i < triangleMesh.size(); ++i)
+		{
+			vertices.push_back(triangleMesh[i].v1);
+			vertices.push_back(triangleMesh[i].v2);
+			vertices.push_back(triangleMesh[i].v3);
+		}
 	}
 
 	~model()

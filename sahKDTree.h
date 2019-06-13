@@ -217,16 +217,15 @@ class sahKDTree
 		sahKDTree(float kT, float kI, Box & topBox, std::vector<Triangle *> & T) : KT(kT), KI(kI) 
 		{
 			root = buildTree(T, topBox, splitPlane(0, std::numeric_limits<float>::max()));
-		}
+		} 
 
-		void getVertices(kdTreeNode * root, std::vector<float> vertices)
+		void getVertices(kdTreeNode * root, std::vector<Vec> & vertices, std::vector<unsigned int> & order)
 		{
 			if (root == nullptr || root->isLeaf)
 				return;
-			std::vector<Vec> boxVertices;
-			root->boundingBox.getVertices(boxVertices);
-			for (int i = 0; i < boxVertices.size(); ++i)
-				vertices.push_back(boxVertices[i].x, boxVertices[i].y, boxVertices[i].z, 1.0);
+			(root->boundingBox).getVertices(vertices, order);
+			getVertices(root->left, vertices, order);
+			getVertices(root->right, vertices, order);
 		}
 
 		~sahKDTree()

@@ -76,10 +76,27 @@ class Box
 				return topRight.z;
 		}
 
-		void getVertices(std::vector<Vec> & vertices)
+		void getVertices(std::vector<Vec> & vertices, std::vector<unsigned int> & order)
 		{
-			vertices.push_back(Vec(lower
+			vertices.push_back(Vec(lowerLeft.x, lowerLeft.y, lowerLeft.z));
+			vertices.push_back(Vec(topRight.x, lowerLeft.y, lowerLeft.z));
+			vertices.push_back(Vec(lowerLeft.x, topRight.y, lowerLeft.z));
+			vertices.push_back(Vec(topRight.x, topRight.y, lowerLeft.z));
+			vertices.push_back(Vec(lowerLeft.x, lowerLeft.y, topRight.z));
+			vertices.push_back(Vec(topRight.x, lowerLeft.y, topRight.z));
+			vertices.push_back(Vec(lowerLeft.x, topRight.y, topRight.z));
+			vertices.push_back(Vec(topRight.x, topRight.y, topRight.z));
 
+			int s = order.size();
+			std::vector<int> temp = 
+			{
+				s + 0, s + 1, s + 2, s + 3,
+				s + 4, s + 5, s + 6, s + 7,
+				s + 0, s + 4, s + 1, s + 5, s + 2, s + 6, s + 3, s + 7 	
+			};
+
+			for (int i = 0; i < temp.size(); ++i)	
+				order.push_back(temp[i]);
 		}
 
 		friend std::ostream & operator<<(std::ostream & out, const Box & toPrint);

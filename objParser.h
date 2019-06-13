@@ -41,7 +41,7 @@ class objParser
 		}	
 		newModel.updateTrianglePointers();
 		newModel.generateKdTree();
-		std::cout << "KdTree Depth " << newModel.getKdTreeDepth(newModel.tree->root) << std::endl;
+		//std::cout << "KdTree Depth " << newModel.getKdTreeDepth(newModel.tree->root) << std::endl;
 		infile.close();
 	}
 };

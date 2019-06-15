@@ -2,6 +2,7 @@
 #include "model.h"
 #include "sahKDTree.h"
 #include "Vec.h"
+#include "Box.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iterator>
@@ -133,8 +134,8 @@ void convertToVerticesArr(const std::vector<Vec> & vertices, float * & result, i
 		vert[i * 4 + 2] = vertices[i].z;
 		vert[i * 4 + 3] = 1.0f;
 	}
-	std::cout << vertices.size() * 4 << std::endl;
-	
+
+	size *= 4;
 	result = vert;	
 }
 
@@ -150,7 +151,9 @@ void convertToOrderArr(const std::vector<unsigned int> & order, unsigned int * &
 	result = ord;
 }
 
-void drawBoundingBox(float * vertices, unsigned int * order, int vertSize, int ordSize, GLuint & programId)
+float toRotate = 0;
+
+void drawObj(float * vertices, unsigned int * order, int vertSize, int ordSize, GLuint & programId)
 {
 	GLuint vbo_vertices;
 	glGenBuffers(1, &vbo_vertices);
@@ -160,18 +163,55 @@ void drawBoundingBox(float * vertices, unsigned int * order, int vertSize, int o
 	glEnableVertexAttribArray(attribute_v_coord);
 	glVertexAttribPointer(attribute_v_coord, 4, GL_FLOAT, GL_FALSE, 0, 0);	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
-	glm::mat4 trans= glm::translate(glm::mat4(1.f), glm::vec3(0.f, -3.f, -8.f));
-	glm::mat4 rot = glm::rotate(0.0f, glm::vec3(0, 1, 0));
-	trans *= rot;
+	
+	glm::mat4 trans= glm::translate(glm::mat4(1.f), glm::vec3(0.f, -2.0f, -8.f));
+	glm::mat4 rot = glm::rotate(toRotate, glm::vec3(0, 1, 0));
+	glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(20, 20, 20));
+	trans *= rot * scale;
 	GLint unitrans = glGetUniformLocation(programId, "trans");
 	glUniformMatrix4fv(unitrans, 1, GL_FALSE, glm::value_ptr(trans));
 
 
 	glm::mat4 proj = glm::perspective(glm::radians(45.0f), 640.0f / 480.0f, 1.0f, 20.0f);
 	GLint uniproj = glGetUniformLocation(programId, "proj");
+	glUniformMatrix4fv(uniproj, 1, GL_FALSE, glm::value_ptr(proj));
 
+	GLuint ibo_elements;
+	glGenBuffers(1, &ibo_elements);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_elements);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ordSize * sizeof(unsigned int), order, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_vertices);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_elements);
+	glDrawElements(GL_TRIANGLES, ordSize, GL_UNSIGNED_INT, 0);	
+}
+
+void drawBoundingBox(float * vertices, unsigned int * order, int vertSize, int ordSize, GLuint & programId)
+{
+	if (toRotate > 360)
+	   toRotate -= 360;	
+	toRotate += 0.02;
+
+	GLuint vbo_vertices;
+	glGenBuffers(1, &vbo_vertices);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_vertices);
+	glBufferData(GL_ARRAY_BUFFER, vertSize * sizeof(float), vertices, GL_STATIC_DRAW);
+	GLuint attribute_v_coord = glGetAttribLocation(programId, "aPos");
+	glEnableVertexAttribArray(attribute_v_coord);
+	glVertexAttribPointer(attribute_v_coord, 4, GL_FLOAT, GL_FALSE, 0, 0);	
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
+	glm::mat4 trans= glm::translate(glm::mat4(1.f), glm::vec3(0.f, -2.0f, -8.f));
+	glm::mat4 rot = glm::rotate(toRotate, glm::vec3(0, 1, 0));
+	glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(20, 20, 20));
+	trans *= rot * scale;
+	GLint unitrans = glGetUniformLocation(programId, "trans");
+	glUniformMatrix4fv(unitrans, 1, GL_FALSE, glm::value_ptr(trans));
+
+
+	glm::mat4 proj = glm::perspective(glm::radians(45.0f), 640.0f / 480.0f, 1.0f, 20.0f);
+	GLint uniproj = glGetUniformLocation(programId, "proj");
 	glUniformMatrix4fv(uniproj, 1, GL_FALSE, glm::value_ptr(proj));
 
 	GLuint ibo_elements;
@@ -183,19 +223,17 @@ void drawBoundingBox(float * vertices, unsigned int * order, int vertSize, int o
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_vertices);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_elements);
 	
-	glDrawElements(GL_TRIANGLES, ordSize, GL_UNSIGNED_INT, 0);
-
-	//glDrawArrays(GL_TRIANGLES, 0, vertSize * 3);
-	//glLineWidth(2);
-	//glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_INT, 0);
-	//glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_INT, (GLvoid *)(4 * sizeof(unsigned int)));
-	//glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, (GLvoid *)(8 * sizeof(unsigned int)));
+	glLineWidth(2);
+	for (int i = 0; i < vertSize / 32; ++i)
+	{
+		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_INT, (GLvoid *) ((i * 16) * sizeof(unsigned int)));
+		glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_INT, (GLvoid *) ((i * 16 * sizeof(unsigned int)) + (4 * sizeof(unsigned int))));
+		glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, (GLvoid *)((i * 16 * sizeof(unsigned int)) + (8 * sizeof(unsigned int))));
+	}
 }
 
-void render(GLFWwindow * window, float * vertices, unsigned int * order, GLuint & programId, int vertSize, int ordSize)
+void render(GLFWwindow * window)
 {
-	glClear(GL_COLOR_BUFFER_BIT);
-	drawBoundingBox(vertices, order, vertSize, ordSize, programId);
 	glfwSwapBuffers(window);
 	glfwPollEvents();
 }
@@ -204,40 +242,37 @@ int main(int argc, char ** argv)
 {
 	model test;
 	objParser::parseObjFile("bunny.obj", test);
-	std::vector<Vec> vertices;
 	GLFWwindow * window = initializeWindow(argc, argv);
 
-	//std::vector<unsigned int> order;
-	//(test.tree)->getVertices((test.tree)->root, vertices, order);
-	test.getVertices(vertices);
-
-	//int vertSize = 0;
-	//float * vert;
-	//convertToVerticesArr(vertices, vert, vertSize);
-	//int ordSize = 0;
-	//unsigned int * ord;
-	//convertToOrderArr(order, ord, ordSize);
+	std::vector<Vec> vertices;
+	std::vector<unsigned int> order;
+	(test.tree)->getVertices((test.tree)->root, vertices, order);
 
 	int vertSize = 0;
 	float * vert;
-	convertToVerticesArr(test.mesh2, vert, vertSize);
+	convertToVerticesArr(vertices, vert, vertSize);
 	int ordSize = 0;
 	unsigned int * ord;
-	convertToOrderArr(test.elem, ord, ordSize);
-
-	//for (int i = 0; i < ordSize; ++i)
-	//{ //	if (i % 3 == 0)
-	//		std::cout << std::endl;
-	//	std::cout << ord[i] << ;
-	//}
-
-	std::cout << vert[0] << " " << vert[1] << " " << vert[2] << std::endl;
+	convertToOrderArr(order, ord, ordSize);
+	
+	//show rabbit
+	int objVertSize = 0;
+	float * objVert;
+	convertToVerticesArr(test.mesh2, objVert, objVertSize);
+	int objOrdSize = 0;
+	unsigned int * objOrd;
+	convertToOrderArr(test.elem, objOrd, objOrdSize);
 
 	GLuint programId = LoadShaders("vertexShader", "fragmentShader");
 	glUseProgram(programId);
 
 	while (!glfwWindowShouldClose(window))
-		render(window, vert, ord, programId, vertSize, ordSize);
+	{
+		glClear(GL_COLOR_BUFFER_BIT);
+		drawObj(objVert, objOrd, objVertSize, objOrdSize, programId);
+		drawBoundingBox(vert, ord, vertSize, ordSize, programId);
+		render(window);
+	}
 
 	delete[] vert;
 	delete[] ord;

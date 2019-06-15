@@ -80,15 +80,15 @@ class Box
 		{
 			vertices.push_back(Vec(lowerLeft.x, lowerLeft.y, lowerLeft.z));
 			vertices.push_back(Vec(topRight.x, lowerLeft.y, lowerLeft.z));
-			vertices.push_back(Vec(lowerLeft.x, topRight.y, lowerLeft.z));
 			vertices.push_back(Vec(topRight.x, topRight.y, lowerLeft.z));
+			vertices.push_back(Vec(lowerLeft.x, topRight.y, lowerLeft.z));
 			vertices.push_back(Vec(lowerLeft.x, lowerLeft.y, topRight.z));
 			vertices.push_back(Vec(topRight.x, lowerLeft.y, topRight.z));
-			vertices.push_back(Vec(lowerLeft.x, topRight.y, topRight.z));
 			vertices.push_back(Vec(topRight.x, topRight.y, topRight.z));
+			vertices.push_back(Vec(lowerLeft.x, topRight.y, topRight.z));
 
-			int s = order.size();
-			std::vector<int> temp = 
+			unsigned int s = order.size();
+			std::vector<unsigned int> temp = 
 			{
 				s + 0, s + 1, s + 2, s + 3,
 				s + 4, s + 5, s + 6, s + 7,

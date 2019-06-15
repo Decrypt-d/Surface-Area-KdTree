@@ -8,5 +8,5 @@ uniform mat4 trans;
 void main()
 {
     gl_Position = proj * trans * aPos;
-	pos = aPos;
+	pos = proj * trans * aPos;
 }

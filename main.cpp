@@ -13,6 +13,9 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/transform.hpp>
 
+float windowResHorizontal = 1200;
+float windowResVertical = 900;
+
 GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path){
 
 	// Create the shaders
@@ -107,7 +110,7 @@ GLFWwindow * initializeWindow(int argc, char ** argv)
 	if (!glfwInit())
 		throw "Error initializing glfw";
 
-	window = glfwCreateWindow(640, 480, "Simple example", NULL, NULL);
+	window = glfwCreateWindow(windowResHorizontal, windowResVertical, "Compsci 114 Final sahTree Viewer", NULL, NULL);
 
 	if (!window) glfwTerminate();
 
@@ -164,15 +167,17 @@ void drawObj(float * vertices, unsigned int * order, int vertSize, int ordSize, 
 	glVertexAttribPointer(attribute_v_coord, 4, GL_FLOAT, GL_FALSE, 0, 0);	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
-	glm::mat4 trans= glm::translate(glm::mat4(1.f), glm::vec3(0.f, -2.0f, -8.f));
+	glm::mat4 trans= glm::translate(glm::mat4(1.f), glm::vec3(0.4f, -3.0f, -8.f));
 	glm::mat4 rot = glm::rotate(toRotate, glm::vec3(0, 1, 0));
-	glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(20, 20, 20));
+	glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(25, 25, 25));
 	trans *= rot * scale;
 	GLint unitrans = glGetUniformLocation(programId, "trans");
 	glUniformMatrix4fv(unitrans, 1, GL_FALSE, glm::value_ptr(trans));
 
+	GLint uniContext = glGetUniformLocation(programId, "context");
+	glUniform1i(uniContext, 1);
 
-	glm::mat4 proj = glm::perspective(glm::radians(45.0f), 640.0f / 480.0f, 1.0f, 20.0f);
+	glm::mat4 proj = glm::perspective(glm::radians(45.0f), windowResHorizontal / windowResVertical, 1.0f, 20.0f);
 	GLint uniproj = glGetUniformLocation(programId, "proj");
 	glUniformMatrix4fv(uniproj, 1, GL_FALSE, glm::value_ptr(proj));
 
@@ -202,15 +207,17 @@ void drawBoundingBox(float * vertices, unsigned int * order, int vertSize, int o
 	glVertexAttribPointer(attribute_v_coord, 4, GL_FLOAT, GL_FALSE, 0, 0);	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
-	glm::mat4 trans= glm::translate(glm::mat4(1.f), glm::vec3(0.f, -2.0f, -8.f));
+	glm::mat4 trans= glm::translate(glm::mat4(1.f), glm::vec3(0.4f, -3.0f, -8.f));
 	glm::mat4 rot = glm::rotate(toRotate, glm::vec3(0, 1, 0));
-	glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(20, 20, 20));
+	glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(25, 25, 25));
 	trans *= rot * scale;
 	GLint unitrans = glGetUniformLocation(programId, "trans");
 	glUniformMatrix4fv(unitrans, 1, GL_FALSE, glm::value_ptr(trans));
 
+	GLint uniContext = glGetUniformLocation(programId, "context");
+	glUniform1i(uniContext, 0);
 
-	glm::mat4 proj = glm::perspective(glm::radians(45.0f), 640.0f / 480.0f, 1.0f, 20.0f);
+	glm::mat4 proj = glm::perspective(glm::radians(45.0f), windowResHorizontal / windowResVertical, 1.0f, 20.0f);
 	GLint uniproj = glGetUniformLocation(programId, "proj");
 	glUniformMatrix4fv(uniproj, 1, GL_FALSE, glm::value_ptr(proj));
 
@@ -265,7 +272,7 @@ int main(int argc, char ** argv)
 
 	GLuint programId = LoadShaders("vertexShader", "fragmentShader");
 	glUseProgram(programId);
-
+	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT);

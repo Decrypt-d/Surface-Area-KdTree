@@ -160,7 +160,6 @@ class sahKDTree
 					NP = 0;
 				}			
 			}
-
 		}
 
 		void splitTrianglesIntVoxel(std::vector<Triangle *> & T, splitPlane & p, Side & pSide, std::vector<Triangle *> & left, std::vector<Triangle *> & right)

@@ -4,9 +4,13 @@ layout (location = 0) in vec4 aPos;
 out vec4 pos;
 uniform mat4 proj;
 uniform mat4 trans;
+uniform int context;
 
 void main()
 {
     gl_Position = proj * trans * aPos;
-	pos = proj * trans * aPos;
+	if (context == 0)
+		pos = vec4(0.0, 0.8, 0.8, 1.0);
+	else 
+		pos = vec4(1.0, 1.0, 1.0, 1.0);
 }
